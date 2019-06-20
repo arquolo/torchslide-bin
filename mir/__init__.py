@@ -1,4 +1,4 @@
-__all__ = ('Writer', 'Reader', 'open')
+__all__ = ('Slide', 'open')
 
 import sys
 import weakref
@@ -25,15 +25,6 @@ else:
     )
 
 
-def format_slice(slices, limits):
-	for s, limit in zip(slices, limits):
-        yield slice(
-            s.start or 0,
-            s.stop or limit,
-            s.step or 1,
-        )
-
-
 @dataclass
 class Slide:
     path: str
@@ -49,10 +40,18 @@ class Slide:
         self.writer.writeImageInformation(self.shape[1], self.shape[0])
 
     def __setitem__(self, slices: Tuple[slice], data: np.ndarray):
-        ys, xs = format_slices(slices, self.shape)
-        for (y, x), tile in zip(product(range(ys), range(xs)),
-                                data.split(axis=[0, 1], tile=self.tile)):
-            self.writer.writeBaseImagePartToLocation(x, y, tile.ravel())
+        ys, xs = (slice(s.start or 0, s.stop or limit, self.tile)
+                  for s, limit in zip(slices, self.shape))
+        if data.shape >= 2:
+            raise ValueError(f'data should be at least 2-dimensional')
+
+        for dim, s in zip(data.shape, (ys, xs)):
+            if dim != s.stop - s.start:
+                raise ValueError(f'Size of {s} must be equal to {dim}')
+
+        for y, tile_row in zip(range(ys), np.split(data, len(ys), axis=0)):
+            for x, tile in zip(range(xs), np.split(tile_row, len(xs), axis=1)):
+                self.writer.writeBaseImagePartToLocation(x, y, tile.ravel())
 
 
 @dataclass
@@ -70,7 +69,8 @@ class SlideView:
         return (h, w, 3)
 
     def __getitem__(self, slices: Tuple[slice]):
-        ys, xs = format_slice(slices, self.shape)
+        ys, xs = (slice(s.start or 0, s.stop or limit, s.step or 1)
+                  for s, limit in zip(slices, self.shape))
         if ys.step not in self.scales or xs.step not in self.scales:
             raise ValueError(
                 f'Both y-step and x-step should be in {self.scales}'
@@ -87,7 +87,7 @@ class SlideView:
         )
 
 
-@contextmanager
+@contextmanager  # noqa
 def open(filename: str):
     slide = Reader().open(filename)
     if slide is None:
