@@ -1,4 +1,4 @@
-__all__ = ('Slide', 'open')
+__all__ = ('Slide', 'SlideView', 'open')
 
 import sys
 import weakref
@@ -88,7 +88,7 @@ class SlideView:
 
 
 @contextmanager  # noqa
-def open(filename: str):
+def open(filename: str) -> SlideView:
     slide = Reader().open(filename)
     if slide is None:
         raise OSError(f'File not found or cannot be opened: {filename}')
