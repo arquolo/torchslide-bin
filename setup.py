@@ -30,9 +30,7 @@ setuptools.setup(
     description='Wrapper for ASAP',
     long_description=Path('README.md').read_text(),
     long_description_content_type='text/markdown',
-    packages=setuptools.find_packages(
-        exclude=['mir._linux'] if 'win' in platform else ['mir._win32']
-    ),
+    packages=setuptools.find_packages(),
     package_data={
         '': ['**/*.dll', '**/*.pyd'] if 'win' in platform else ['**/*.so'],
     },

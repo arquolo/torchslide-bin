@@ -1,6 +1,5 @@
 __all__ = ('Slide', 'SlideView', 'open')
 
-import sys
 import weakref
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -8,21 +7,10 @@ from typing import Tuple
 
 import numpy as np
 
-if sys.platform == 'win32':
-    from ._win32.multiresolutionimageinterface import (
-        MultiResolutionImageReader as Reader,
-        MultiResolutionImageWriter as Writer,
-    )
-else:
-    # from ctypes import cdll
-    # for path in sorted(
-            # Path(__file__).parent.rglob('lib*.so'),
-            # key=lambda p: 'z' if 'annotation' in str(p) else p.stem):
-        # cdll.LoadLibrary(str(path))
-    from .lib.multiresolutionimageinterface import (
-        MultiResolutionImageReader as Reader,
-        MultiResolutionImageWriter as Writer,
-    )
+from .bin.multiresolutionimageinterface import (
+    MultiResolutionImageReader as Reader,
+    MultiResolutionImageWriter as Writer,
+)
 
 
 @dataclass
@@ -98,7 +86,11 @@ class SlideView:
 
 
 def open(filename: str) -> SlideView:  # noqa
-    slide = Reader().open(filename)
+    if not Path(filename).exists():
+        raise OSError(f'File not found: {filename}')
+
+    slide = Reader().open(str(filename))
     if slide is None:
-        raise OSError(f'File not found or cannot be opened: {filename}')
+        raise OSError(f'File cannot be opened: {filename}')
+
     return SlideView(slide)

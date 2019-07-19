@@ -2312,5 +2312,3 @@ MultiResolutionImageWriter_swigregister = _multiresolutionimageinterface.MultiRe
 MultiResolutionImageWriter_swigregister(MultiResolutionImageWriter)
 
 # This file is compatible with both classic and new-style classes.
-
-
