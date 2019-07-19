@@ -2,7 +2,6 @@ __all__ = ('Slide', 'SlideView', 'open')
 
 import sys
 import weakref
-from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Tuple
@@ -15,11 +14,12 @@ if sys.platform == 'win32':
         MultiResolutionImageWriter as Writer,
     )
 else:
-    from ctypes import cdll
-    for path in Path(__file__).parent.rglob('lib*.so'):
-        cdll.LoadLibrary(str(path))
-
-    from ._linux.multiresolutionimageinterface import (
+    # from ctypes import cdll
+    # for path in sorted(
+            # Path(__file__).parent.rglob('lib*.so'),
+            # key=lambda p: 'z' if 'annotation' in str(p) else p.stem):
+        # cdll.LoadLibrary(str(path))
+    from .lib.multiresolutionimageinterface import (
         MultiResolutionImageReader as Reader,
         MultiResolutionImageWriter as Writer,
     )
@@ -57,6 +57,16 @@ class Slide:
 @dataclass
 class SlideView:
     slide: object
+    close: callable = None
+
+    def __post_init__(self):
+        self.close = weakref.finalize(self.slide, self.slide.close)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_):
+        self.close()
 
     @property
     def scales(self):
@@ -87,12 +97,8 @@ class SlideView:
         )
 
 
-@contextmanager  # noqa
-def open(filename: str) -> SlideView:
+def open(filename: str) -> SlideView:  # noqa
     slide = Reader().open(filename)
     if slide is None:
         raise OSError(f'File not found or cannot be opened: {filename}')
-    try:
-        yield SlideView(slide)
-    finally:
-        slide.close()
+    return SlideView(slide)
