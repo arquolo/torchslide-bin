@@ -48,7 +48,7 @@ class SlideView:
     close: callable = None
 
     def __post_init__(self):
-        self.close = weakref.finalize(self.slide, self.slide.close)
+        self.close = weakref.finalize(self, self.slide.close)
 
     def __enter__(self):
         return self
