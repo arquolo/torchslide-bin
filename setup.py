@@ -23,7 +23,7 @@ else:
 
 setuptools.setup(
     name='mir-asap',
-    version='0.1.1',
+    version='0.1.2',
     url='https://github.com/arquolo/gigaslide-bin',
     author='Paul Maevskikh',
     author_email='arquolo@gmail.com',
