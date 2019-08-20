@@ -3,6 +3,9 @@ from pathlib import Path
 
 import setuptools
 
+if not ((3, 6) <= sys.version_info < (3, 7)):
+    raise OSError(f'This module supports only Python 3.6')
+
 
 class BinaryDistribution(setuptools.Distribution):
     def has_ext_modules(self):

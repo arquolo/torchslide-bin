@@ -7,10 +7,13 @@ from typing import Tuple
 
 import numpy as np
 
-from .bin.multiresolutionimageinterface import (
-    MultiResolutionImageReader as Reader,
-    MultiResolutionImageWriter as Writer,
-)
+try:
+    from .bin.multiresolutionimageinterface import (
+        MultiResolutionImageReader as Reader,
+        MultiResolutionImageWriter as Writer,
+    )
+except ModuleNotFoundError:
+    raise OSError(f'"{__package__}" supports only Python 3.6') from None
 
 
 @dataclass
