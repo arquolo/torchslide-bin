@@ -25,12 +25,12 @@ else:
 
 
 setuptools.setup(
-    name='mir-asap',
+    name='torchslide',
     version='0.1.2',
-    url='https://github.com/arquolo/gigaslide-bin',
+    url='https://github.com/arquolo/torchslide-bin',
     author='Paul Maevskikh',
     author_email='arquolo@gmail.com',
-    description='Wrapper for ASAP',
+    description='torchslide - prebuilt version for Python 3.6',
     long_description=Path('README.md').read_text(),
     long_description_content_type='text/markdown',
     packages=setuptools.find_packages(),

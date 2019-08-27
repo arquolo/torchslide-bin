@@ -1,15 +1,15 @@
-# Wrapper for [ASAP](https://github.com/computationalpathologygroup/ASAP)
-
-- Bundles all libraries required for ASAP to single package.
+# TorchSlide
+- Works only on Python-3.6
+- Bundles all binaries from [ASAP](https://github.com/computationalpathologygroup/ASAP) to single package
 - Provides array-like interface for `ASAP::MultiResolutionImage`
 
 ## Usage:
 
 ```python
-import mir
+import torchslide as ts
 
-with mir.open('test.svs') as image:
-    shape = image.shape
-    scales = image.scales
-    patch = image[:2048, :2048]  # get numpy.ndarray
+with ts.open('test.svs') as slide:
+    shape = slide.shape
+    scales = slide.scales
+    image = slide[:2048, :2048]  # get numpy.ndarray
 ```

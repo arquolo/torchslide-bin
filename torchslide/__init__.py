@@ -21,7 +21,7 @@ class Slide:
     path: str
     shape: Tuple[int]
     tile: int
-    writer: object = field(default_factory=Writer, init=None)
+    writer: object = field(default_factory=Writer, init=False)
     close: callable = field(init=False)
 
     def __post_init__(self):
@@ -45,12 +45,15 @@ class Slide:
                 self.writer.writeBaseImagePartToLocation(x, y, tile.ravel())
 
 
-@dataclass
 class SlideView:
-    slide: object
-    close: callable = None
+    def __init__(self, filename: str):
+        if not Path(filename).exists():
+            raise OSError(f'File not found: {filename}')
 
-    def __post_init__(self):
+        self.slide = slide = Reader().open(str(filename))
+        if slide is None:
+            raise OSError(f'File cannot be opened: {filename}')
+
         self.close = weakref.finalize(self, self.slide.close)
 
     def __enter__(self):
@@ -89,11 +92,4 @@ class SlideView:
 
 
 def open(filename: str) -> SlideView:  # noqa
-    if not Path(filename).exists():
-        raise OSError(f'File not found: {filename}')
-
-    slide = Reader().open(str(filename))
-    if slide is None:
-        raise OSError(f'File cannot be opened: {filename}')
-
-    return SlideView(slide)
+    return SlideView(filename)
