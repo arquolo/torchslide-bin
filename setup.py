@@ -26,7 +26,7 @@ else:
 
 setuptools.setup(
     name='torchslide',
-    version='0.2.0',
+    version='0.3.0',
     url='https://github.com/arquolo/torchslide-bin',
     author='Paul Maevskikh',
     author_email='arquolo@gmail.com',
