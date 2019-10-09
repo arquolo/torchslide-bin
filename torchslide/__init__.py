@@ -1,4 +1,4 @@
-__all__ = ('Slide', 'SlideView', 'open')
+__all__ = ('Image', 'ImageWriter')
 
 import weakref
 from dataclasses import dataclass, field
@@ -17,7 +17,7 @@ except ModuleNotFoundError:
 
 
 @dataclass
-class Slide:
+class ImageWriter:
     path: str
     shape: Tuple[int]
     tile: int
@@ -45,7 +45,7 @@ class Slide:
                 self.writer.writeBaseImagePartToLocation(x, y, tile.ravel())
 
 
-class SlideView:
+class Image:
     def __init__(self, filename: str):
         if not Path(filename).exists():
             raise OSError(f'File not found: {filename}')
@@ -55,12 +55,6 @@ class SlideView:
             raise OSError(f'File cannot be opened: {filename}')
 
         self.close = weakref.finalize(self, self.slide.close)
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *_):
-        self.close()
 
     @property
     def scales(self):
@@ -89,7 +83,3 @@ class SlideView:
             (ys.stop - ys.start) // step,
             level,
         )
-
-
-def open(filename: str) -> SlideView:  # noqa
-    return SlideView(filename)

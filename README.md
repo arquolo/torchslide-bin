@@ -8,8 +8,8 @@
 ```python
 import torchslide as ts
 
-with ts.open('test.svs') as slide:
-    shape = slide.shape
-    scales = slide.scales
-    image = slide[:2048, :2048]  # get numpy.ndarray
+slide = ts.Image('test.svs')
+shape: 'Tuple[int]' = slide.shape
+scales: 'Tuple[int]' = slide.scales
+image: np.ndarray = slide[:2048, :2048]  # get numpy.ndarray
 ```
